@@ -56,7 +56,7 @@ app.use(
 );
 
 //Usar rutas de autenticación
-app.use('/api', authRouter);
+app.use('/api/auth', authRouter);
 
 app.use((error: any, _req: any, res: any, _next: any) => {
   logger.error({ err: error }, 'Error no manejado en la aplicación');

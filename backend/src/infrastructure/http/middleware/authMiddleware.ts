@@ -21,7 +21,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     }
 
     try {
-        const payload = jwt.verify(token, env.JWT_SECRET) as any;
+        const payload = jwt.verify(token, env.ACCESS_TOKEN_SECRET) as any;
         if (payload.type !== "access") {
             return res.status(401).json({ error: "No autorizado" });
         }
