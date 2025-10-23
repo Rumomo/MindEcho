@@ -1,0 +1,3 @@
+//Ignorar archivos de configuración de entorno que contienen información sensible.
+infra/.env
+backend/.env
