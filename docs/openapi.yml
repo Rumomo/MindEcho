@@ -1,0 +1,81 @@
+openapi: 3.0.3
+info: { title: MindEcho API, version: 0.2.0 }
+servers:
+  - url: http://localhost:3000
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  schemas:
+    AuthCredentials:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, example: ruyman@example.com }
+        password: { type: string, minLength: 8, example: Password123 }
+    Tokens:
+      type: object
+      properties:
+        accessToken: { type: string }
+        refreshToken: { type: string }
+    RefreshRequest:
+      type: object
+      required: [refresh_token]
+      properties:
+        refresh_token: { type: string }
+paths:
+  /health:
+    get:
+      summary: Liveness/Health
+      responses:
+        '200': { description: OK }
+
+  /api/register:
+    post:
+      summary: Registro de usuario
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/AuthCredentials' } }
+      responses:
+        '201': { description: Creado, content: { application/json: { schema: { $ref: '#/components/schemas/Tokens' } } } }
+        '409': { description: Email ya registrado }
+
+  /api/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/AuthCredentials' } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Tokens' } } } }
+        '401': { description: Credenciales inválidas }
+
+  /api/refresh:
+    post:
+      summary: Rotar refresh y emitir nuevo par de tokens
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/RefreshRequest' } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Tokens' } } } }
+        '401': { description: Refresh inválido o expirado }
+
+  /api/logout:
+    post:
+      summary: Revocar refresh actual
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/RefreshRequest' } }
+      responses:
+        '200': { description: OK }
+
+  /api/user/me:
+    get:
+      summary: Perfil autenticado
+      security: [ { bearerAuth: [] } ]
+      responses:
+        '200': { description: OK }
+        '401': { description: No autorizado }
