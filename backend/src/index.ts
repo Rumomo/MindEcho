@@ -8,6 +8,8 @@ import { loadEnv } from './config/env';
 // Importar modelos para asegurar que se registren en Mongoose
 import { UserModel } from './infrastructure/db/mongo/models/userModel';
 import { RefreshTokenModel } from './infrastructure/db/mongo/models/refreshTokenModel';
+// Importar rutas, supervisa que las rutas de autenticación estén disponibles
+import { authRouter } from  './infrastructure/http/routes/auth.routes';
 
 //Cargar y validar variables de entorno
 const env = loadEnv();
@@ -40,6 +42,14 @@ app.use(
     },
   })
 );
+
+//Usar rutas de autenticación
+app.use('/api', authRouter);
+
+app.use((error: any, _req: any, res: any, _next: any) => {
+  logger.error({ err: error }, 'Error no manejado en la aplicación');
+  res.status(500).json({ error: 'Error interno del servidor' });
+});
 
 //Rutas de la API
 app.get('/health', (_req, res) => {
