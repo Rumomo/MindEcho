@@ -11,6 +11,10 @@ import { UserModel } from './infrastructure/db/mongo/models/userModel';
 import { RefreshTokenModel } from './infrastructure/db/mongo/models/refreshTokenModel';
 // Importar rutas, supervisa que las rutas de autenticación estén disponibles
 import { authRouter } from  './infrastructure/http/routes/auth.routes';
+import { onboardingRouter } from './infrastructure/http/routes/onboarding.routes';
+// Importar tipos
+import { RequestHandler } from 'express';
+
 
 //Cargar y validar variables de entorno
 const env = loadEnv();
@@ -57,6 +61,9 @@ app.use(
 
 //Usar rutas de autenticación
 app.use('/api/auth', authRouter);
+
+//Usar rutas de onboarding
+app.use('/api/onboarding', onboardingRouter);
 
 app.use((error: any, _req: any, res: any, _next: any) => {
   logger.error({ err: error }, 'Error no manejado en la aplicación');
