@@ -1,7 +1,14 @@
 openapi: 3.0.3
-info: { title: MindEcho API, version: 0.2.0 }
+info:
+  title: MindEcho API
+  version: 0.2.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
 servers:
-  - url: http://localhost:3000
+  - url: https://api.mindecho.com
+security:
+  - bearerAuth: []
 components:
   securitySchemes:
     bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
@@ -25,12 +32,15 @@ components:
 paths:
   /health:
     get:
+      operationId: getHealth
       summary: Liveness/Health
       responses:
         '200': { description: OK }
+        '500': { description: Internal Server Error }
 
-  /api/register:
+  /api/auth/register:
     post:
+      operationId: registerUser
       summary: Registro de usuario
       requestBody:
         required: true
@@ -38,10 +48,12 @@ paths:
           application/json: { schema: { $ref: '#/components/schemas/AuthCredentials' } }
       responses:
         '201': { description: Creado, content: { application/json: { schema: { $ref: '#/components/schemas/Tokens' } } } }
+        '400': { description: Datos inválidos }
         '409': { description: Email ya registrado }
 
-  /api/login:
+  /api/auth/login:
     post:
+      operationId: loginUser
       summary: Login
       requestBody:
         required: true
@@ -49,10 +61,12 @@ paths:
           application/json: { schema: { $ref: '#/components/schemas/AuthCredentials' } }
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Tokens' } } } }
+        '400': { description: Datos inválidos }
         '401': { description: Credenciales inválidas }
 
-  /api/refresh:
+  /api/auth/refresh:
     post:
+      operationId: refreshTokens
       summary: Rotar refresh y emitir nuevo par de tokens
       requestBody:
         required: true
@@ -60,10 +74,12 @@ paths:
           application/json: { schema: { $ref: '#/components/schemas/RefreshRequest' } }
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Tokens' } } } }
+        '400': { description: Datos inválidos }
         '401': { description: Refresh inválido o expirado }
 
-  /api/logout:
+  /api/auth/logout:
     post:
+      operationId: logoutUser
       summary: Revocar refresh actual
       requestBody:
         required: true
@@ -71,9 +87,12 @@ paths:
           application/json: { schema: { $ref: '#/components/schemas/RefreshRequest' } }
       responses:
         '200': { description: OK }
+        '400': { description: Datos inválidos }
+        '401': { description: Refresh inválido }
 
-  /api/user/me:
+  /api/auth/user/me:
     get:
+      operationId: getUserProfile
       summary: Perfil autenticado
       security: [ { bearerAuth: [] } ]
       responses:
