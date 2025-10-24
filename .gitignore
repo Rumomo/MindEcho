@@ -1,0 +1,5 @@
+node_modules
+infra/.env
+backend/.env
+!infra/.env.example
+!backend/.env.example
